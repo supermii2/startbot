@@ -1,31 +1,25 @@
-from dotenv import load_dotenv
-import os
 import requests
 
-load_dotenv()
+from src.utils.get_env import get_start_token, get_start_url
 
-TOKEN = os.getenv('START_TOKEN')
-URL = os.getenv('START_URL')
+TOKEN = get_start_token()
+URL = get_start_url()
 HEADERS = {
     'Authorization': 'Bearer ' + TOKEN
 }
 
-def makeGqlRequest(gqlString, variables):
+
+def make_gql_request(gql_string: str, variables) -> dict:
     query = {
-        "query" : gqlString,
-        "variables" : variables,
-        "operationName" : gqlString.split("(")[0].split("query ")[-1]
+        "query": gql_string,
+        "variables": variables,
+        "operationName": gql_string.split("(")[0].split("query ")[-1]
     }
 
     response = requests.post(URL, json=query, headers=HEADERS)
     response = response.json()
     if "errors" in response:
         raise SyntaxError(response['errors'][0]['message'])
-    
+
     else:
         return response['data']
-
-
-
-
-
