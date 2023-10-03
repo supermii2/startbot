@@ -3,6 +3,7 @@ from enum import Enum
 import discord
 
 from src.data.character_data import LIST_OF_CHARS
+from src.game_objects.game import Game
 
 
 class GameRow:
@@ -75,18 +76,19 @@ class GameRow:
             # Check if Set is Completed
             if view.check_win():
                 view.clear_items()
-                await interaction.response.edit_message(content="Set Reported!", view=view)  # noqa
+                await interaction.response.edit_message(content="Set Reported!", view=view)
                 view.report()
 
             # Set not completed, add another game row
             else:
-                view.game_rows.append(GameRow(view, current_row + 1))
+                view.game_rows.append(GameRow(view, current_row + 1, self.parent.entrants))
                 view.update_view()
                 await interaction.response.edit_message(view=view)
 
-    def __init__(self, view, row):
+    def __init__(self, view, row, entrants):
         self.view = view
         self.row = row
+        self.entrants = entrants
         # Recorded Variables
         self.isP1Win, self.p1_char, self.p2_char = None, None, None
 
@@ -106,3 +108,7 @@ class GameRow:
         if current_row == 0:
             return None
         return view.game_rows[current_row - 1]
+
+    def toGame(self) -> Game:
+        winner = self.entrants[0] if self.isP1Win else self.entrants[1]
+        return Game(entrants=self.entrants, winner=winner, characters=[self.p1_char, self.p2_char])

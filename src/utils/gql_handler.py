@@ -9,13 +9,19 @@ HEADERS = {
 }
 
 
-def make_gql_request(gql_string: str, variables) -> dict:
-    query = {
-        "query": gql_string,
-        "variables": variables,
-        "operationName": gql_string.split("(")[0].split("query ")[-1]
-    }
-
+def make_gql_request(gql_string: str, variables: dict, is_mutate: bool = False) -> dict:
+    if not is_mutate:
+        query = {
+            "query": gql_string,
+            "variables": variables,
+            "operationName": gql_string.split("(")[0].split("query ")[-1]
+        }
+    else:
+        query = {
+            "query": gql_string,
+            "variables": variables,
+            "operationName": gql_string.split("(")[0].split("mutation ")[-1]
+        }
     response = requests.post(URL, json=query, headers=HEADERS)
     response = response.json()
     if "errors" in response:
