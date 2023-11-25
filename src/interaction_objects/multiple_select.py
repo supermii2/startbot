@@ -26,7 +26,6 @@ class MultipleSelect:
         async def callback(self, interaction: discord.Interaction):
             self.parent.update_page(self.is_left)
             await interaction.response.edit_message(view=self.parent.view)
-            await interaction.response.defer()
 
     class ConfirmButton(discord.ui.Button):
         def __init__(self, parent):

@@ -47,7 +47,7 @@ def fromDiscordIdGetPlayerId(tour_slug, discord_id):
     return None
 
 
-def get_called_sets_from_tour_slug(tournament_slug: str, discord_id: int) -> dict:
+def get_called_sets_from_tour_slug(tournament_slug: str, discord_id: int) -> dict or None:
     gql_string = """
     query getSetsFromEvent($slug: String, $eventFilters : EventFilter, $setFilters : SetFilters) {
         tournament(slug: $slug) {
@@ -79,11 +79,13 @@ def get_called_sets_from_tour_slug(tournament_slug: str, discord_id: int) -> dic
     }
 
     response = make_gql_request(gql_string, variables)
-    print(response)
     response_sets = []
 
     for event in response['tournament']['events']:
         response_sets.extend(event['sets']['nodes'])
+
+    if not response_sets:
+        return None
 
     def response_set_to_game_set(r_set: dict) -> GameSet:
         entrants: list[Entrant] = list(map(lambda slot: Entrant(name=slot['entrant']['name'],

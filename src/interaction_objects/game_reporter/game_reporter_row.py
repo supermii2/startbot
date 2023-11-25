@@ -30,7 +30,10 @@ class GameRow:
                 button_index = GameRow.GameRowButtons.LEFT_CHAR.value if self.is_p1 \
                     else GameRow.GameRowButtons.RIGHT_CHAR.value
                 self.emoji = previous_row.buttons[button_index].emoji
-                self.parent.p1_char = previous_row.p1_char if self.is_p1 else self.parent.p2_char
+                if self.is_p1:
+                    self.parent.p1_char = previous_row.p1_char
+                else:
+                    self.parent.p2_char = previous_row.p2_char
 
         async def callback(self, interaction: discord.Interaction):
             from src.interaction_objects.game_reporter.game_reporter_character_reporter import GRCharacterReport
